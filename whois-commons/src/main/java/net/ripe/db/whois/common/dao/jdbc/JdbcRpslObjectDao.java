@@ -123,8 +123,7 @@ public class JdbcRpslObjectDao implements RpslObjectDao {
                 queryBuilder.append("" +
                         "SELECT object_id, object " +
                         "FROM last " +
-                        "WHERE object_id = ? " +
-                        "AND sequence_id != 0");
+                        "WHERE object_id = ?");
 
                 objectIds.add(objectId);
             }
@@ -165,8 +164,7 @@ public class JdbcRpslObjectDao implements RpslObjectDao {
     public RpslObject getById(final int objectId) {
         return jdbcTemplate.queryForObject("" +
                 "SELECT object_id, object FROM last " +
-                "WHERE object_id = ? " +
-                "AND sequence_id != 0",
+                "WHERE object_id = ?",
                 new RpslObjectRowMapper(),
                 objectId);
     }
@@ -182,7 +180,7 @@ public class JdbcRpslObjectDao implements RpslObjectDao {
             return jdbcTemplate.queryForObject("" +
                     "SELECT object_id, object " +
                     "  FROM last " +
-                    "  WHERE object_type = ? and pkey = ? and sequence_id != 0 ",
+                    "  WHERE object_type = ? and pkey = ? ",
                     new RpslObjectRowMapper(),
                     ObjectTypeIds.getId(type),
                     key.toString());
@@ -217,8 +215,7 @@ public class JdbcRpslObjectDao implements RpslObjectDao {
                 "FROM last l " +
                 "JOIN as_block a ON l.object_id = a.object_id " +
                 "WHERE ? >= a.begin_as " +
-                "AND ? <= a.end_as " +
-                "AND l.sequence_id != 0",
+                "AND ? <= a.end_as ",
                 new RpslObjectRowMapper(),
                 begin,
                 end);
@@ -238,8 +235,7 @@ public class JdbcRpslObjectDao implements RpslObjectDao {
                 "JOIN as_block a ON l.object_id = a.object_id " +
                 "WHERE (:begin >= a.begin_as AND :begin <=a.end_as) " +
                 "OR (:end >= a.begin_as AND :end <=a.end_as) " +
-                "OR (:begin<=a.begin_as AND :end >= a.end_as) " +
-                "AND l.sequence_id != 0",
+                "OR (:begin<=a.begin_as AND :end >= a.end_as) ",
                 params,
                 new RpslObjectRowMapper()
         );
@@ -251,7 +247,7 @@ public class JdbcRpslObjectDao implements RpslObjectDao {
             return jdbcTemplate.queryForObject("" +
                     "SELECT object_id, pkey " +
                     "  FROM last " +
-                    "  WHERE object_type = ? and pkey = ? and sequence_id != 0 ",
+                    "  WHERE object_type = ? and pkey = ? ",
                     new RowMapper<RpslObjectInfo>() {
                         @Override
                         public RpslObjectInfo mapRow(final ResultSet rs, final int rowNum) throws SQLException {
@@ -314,8 +310,7 @@ public class JdbcRpslObjectDao implements RpslObjectDao {
                         "  LEFT OUTER JOIN mnt_by ON member_of.object_id = mnt_by.object_id " +
                         "  LEFT JOIN last l ON l.object_id = member_of.object_id " +
                         "  WHERE {0}.object_id = member_of.set_id " +
-                        "  AND {0}.{1} = ?" +
-                        "  AND l.sequence_id != 0 ",
+                        "  AND {0}.{1} = ? ",
                 indexStrategy.getLookupTableName(),
                 indexStrategy.getLookupColumnName());
 

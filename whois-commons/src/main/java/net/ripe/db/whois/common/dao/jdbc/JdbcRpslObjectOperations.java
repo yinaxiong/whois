@@ -93,7 +93,7 @@ public class JdbcRpslObjectOperations {
         return jdbcTemplate.queryForObject("" +
                 "SELECT last.object_id, last.sequence_id, last.object_type " +
                 "FROM last " +
-                "WHERE last.object_type = ? AND last.pkey = ? AND last.sequence_id > 0",
+                "WHERE last.object_type = ? AND last.pkey = ? ",
                 new RowMapper<RpslObjectUpdateInfo>() {
                     @Override
                     public RpslObjectUpdateInfo mapRow(final ResultSet rs, final int rowNum) throws SQLException {
@@ -106,13 +106,21 @@ public class JdbcRpslObjectOperations {
         return jdbcTemplate.queryForObject("" +
                 "SELECT last.object_id, last.sequence_id, last.object_type " +
                 "FROM last " +
-                "WHERE last.object_id = ? AND last.sequence_id > 0",
+                "WHERE last.object_id = ? ",
                 new RowMapper<RpslObjectUpdateInfo>() {
                     @Override
                     public RpslObjectUpdateInfo mapRow(final ResultSet rs, final int rowNum) throws SQLException {
                         return new RpslObjectUpdateInfo(rs.getInt(1), rs.getInt(2), ObjectTypeIds.getType(rs.getInt(3)), pkey);
                     }
                 }, objectId);
+    }
+
+    public static boolean objectExistsInLast(final JdbcTemplate jdbcTemplate, final int objectId) {
+        int count = jdbcTemplate.queryForInt("" +
+                "SELECT count(last.object_id) " +
+                "FROM last " +
+                "WHERE last.object_id = ? ", objectId);
+        return (count>0);
     }
 
     public static void deleteFromTables(final JdbcTemplate jdbcTemplate, final RpslObjectInfo rpslObjectInfo) {
@@ -177,15 +185,16 @@ public class JdbcRpslObjectOperations {
 
     private static void deleteFromLast(DateTimeProvider dateTimeProvider, JdbcTemplate jdbcTemplate, RpslObjectUpdateInfo rpslObjectInfo) {
         int rows = jdbcTemplate.update("" +
-                "UPDATE last SET object = '', timestamp = ?, sequence_id = 0 " +
-                "WHERE object_id = ? AND sequence_id > 0",
+                "DELETE FROM last " +
+                "WHERE object_id = ? ",
                 now(dateTimeProvider), rpslObjectInfo.getObjectId());
         if (rows != 1) {
             throw new DataIntegrityViolationException("Rows affected by UPDATE last table is: " + rows);
         }
     }
 
-    public static int updateLastAndUpdateSerials(final DateTimeProvider dateTimeProvider, final JdbcTemplate jdbcTemplate, final RpslObjectUpdateInfo rpslObjectInfo, final RpslObject object) {
+    public static int updateLastAndUpdateSerials(final DateTimeProvider dateTimeProvider, final JdbcTemplate jdbcTemplate,
+                                                 final RpslObjectUpdateInfo rpslObjectInfo, final RpslObject object) {
         final int newSequenceId = updateLast(dateTimeProvider, jdbcTemplate, rpslObjectInfo, object);
         int rows = jdbcTemplate.update("INSERT INTO serials "
                 + " (object_id, sequence_id, atlast, operation) "
@@ -199,6 +208,38 @@ public class JdbcRpslObjectOperations {
 
         return newSequenceId;
     }
+
+    public static int reInsertIntoLastAndUpdateSerials(final DateTimeProvider dateTimeProvider, final JdbcTemplate jdbcTemplate,
+                                                       final RpslObjectUpdateInfo rpslObjectInfo, final RpslObject object) {
+
+        final Integer objectTypeId = ObjectTypeIds.getId(object.getType());
+        final String pkey = object.getKey().toString();
+
+        final int newSequenceId = rpslObjectInfo.getSequenceId()+1;
+
+        int rows = jdbcTemplate.update("INSERT INTO last "
+                + " (object_id, sequence_id, timestamp, object_type, object, pkey) "
+                + " VALUES "
+                + " (?, ?, ?, ?, ?)",
+                rpslObjectInfo.getObjectId(), newSequenceId, now(dateTimeProvider), objectTypeId, pkey);
+
+        if (rows != 1) {
+            throw new DataIntegrityViolationException("Rows affected by INSERT INTO last table: " + rows);
+        }
+
+        int serialRows = jdbcTemplate.update("INSERT INTO serials "
+                + " (object_id, sequence_id, atlast, operation) "
+                + " VALUES "
+                + " (?, ?, 1, ?)",
+                rpslObjectInfo.getObjectId(), newSequenceId, Operation.UPDATE.getCode());
+
+        if (serialRows != 1) {
+            throw new DataIntegrityViolationException("Rows affected by INSERT INTO serials table: " + rows);
+        }
+
+        return newSequenceId;
+    }
+
 
     public static int updateLastAndSetSerials(final DateTimeProvider dateTimeProvider, final JdbcTemplate jdbcTemplate,
                                               final RpslObjectUpdateInfo rpslObjectInfo, final RpslObject object, final int serialId) {
@@ -263,8 +304,7 @@ public class JdbcRpslObjectOperations {
                 "SELECT COUNT(*)\n" +
                 "    FROM last\n" +
                 "    WHERE object_type=?\n" +
-                "    AND pkey=?\n" +
-                "    AND sequence_id > 0",
+                "    AND pkey=?",
                 objectTypeId,
                 pkey);
 
@@ -380,6 +420,7 @@ public class JdbcRpslObjectOperations {
         }
     }
 
+    // TODO: [TP] after removing the deleted entries from last table, the getSerialEntry needs to be changed
     // TODO: [AH] remove legacy references from this query once we deprecated legacy
     // TODO: [AH] fix legacy history to match rdp's approach
     // note: this is really kludgy, because legacy decreased serials.sequence_id by 1 on deletion, to make sure once

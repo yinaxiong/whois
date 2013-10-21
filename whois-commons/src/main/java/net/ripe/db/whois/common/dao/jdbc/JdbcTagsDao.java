@@ -95,7 +95,7 @@ public class JdbcTagsDao implements TagsDao {
             }
         });
     }
-
+    //TODO: [TP] After removing the deleted entries from last table, deleteOrphanedTags Query has to be changed
     @Override
     public void deleteOrphanedTags() {
         jdbcTemplate.update("DELETE tags FROM tags LEFT OUTER JOIN last ON last.object_id = tags.object_id WHERE last.sequence_id = 0");

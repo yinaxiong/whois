@@ -41,8 +41,7 @@ class IndexWithInetnum extends IndexStrategyWithSingleLookupTable {
                 "SELECT l.object_id, l.object_type, l.pkey " +
                 "  FROM inetnum " +
                 "  LEFT JOIN last l ON l.object_id = inetnum.object_id " +
-                "  WHERE begin_in = ? AND end_in = ? " +
-                "  AND l.sequence_id != 0 ",
+                "  WHERE begin_in = ? AND end_in = ? ",
                 new RpslObjectResultSetExtractor(),
                 resource.begin(),
                 resource.end());

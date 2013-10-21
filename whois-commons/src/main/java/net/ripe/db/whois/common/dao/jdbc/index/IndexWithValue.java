@@ -30,8 +30,7 @@ class IndexWithValue extends IndexStrategySimpleLookup {
                 "SELECT l.object_id, l.object_type, l.pkey " +
                         "  FROM {0} " +
                         "  LEFT JOIN last l ON l.object_id = {0}.object_id " +
-                        "  WHERE " + (forceIgnoreCase ? "upper({0}.{1}) = upper(?) " : "{0}.{1} = ? ") +
-                        "  AND l.sequence_id != 0 ",
+                        "  WHERE " + (forceIgnoreCase ? "upper({0}.{1}) = upper(?) " : "{0}.{1} = ? "),
                 lookupTableName,
                 lookupColumnName
         );

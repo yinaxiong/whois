@@ -70,8 +70,7 @@ class ResourceTagger {
                 String.format("" +
                         "SELECT object_id, object_type, pkey " +
                         "FROM last " +
-                        "WHERE object_type IN (%s) " +
-                        "AND sequence_id != 0 ",
+                        "WHERE object_type IN (%s) ",
                         Joiner.on(',').join(Iterables.transform(authoritativeResource.getResourceTypes(), new Function<ObjectType, Integer>() {
                             @Nullable
                             @Override
@@ -127,8 +126,7 @@ class ResourceTagger {
                 String.format("" +
                         "SELECT object_id, object " +
                         "FROM last " +
-                        "WHERE object_type IN (%d, %d) " +
-                        "AND sequence_id != 0",
+                        "WHERE object_type IN (%d, %d) ",
                 ObjectTypeIds.getId(ObjectType.ROUTE), ObjectTypeIds.getId(ObjectType.ROUTE6)),
                 new RowCallbackHandler() {
                     @Override

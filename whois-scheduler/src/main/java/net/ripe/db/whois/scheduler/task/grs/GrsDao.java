@@ -61,8 +61,7 @@ class GrsDao {
         ensureInitialized();
         return slaveJdbcTemplate.queryForList("" +
                 "SELECT object_id " +
-                "FROM last " +
-                "WHERE sequence_id != 0",
+                "FROM last ",
                 Integer.class);
     }
 
@@ -72,8 +71,7 @@ class GrsDao {
         return CollectionHelper.uniqueResult(masterJdbcTemplate.query("" +
                 "SELECT object_id, sequence_id, object " +
                 "  FROM last " +
-                "  WHERE object_id = ?" +
-                "  AND sequence_id != 0 ",
+                "  WHERE object_id = ? ",
                 new RowMapper<GrsObjectInfo>() {
                     @Override
                     public GrsObjectInfo mapRow(final ResultSet rs, final int rowNum) throws SQLException {
@@ -95,8 +93,7 @@ class GrsDao {
                 "SELECT object_id, sequence_id, object " +
                 "  FROM last " +
                 "  WHERE object_type = ?" +
-                "  AND pkey = ?" +
-                "  AND sequence_id != 0 ",
+                "  AND pkey = ?",
                 new RowMapper<GrsObjectInfo>() {
                     @Override
                     public GrsObjectInfo mapRow(final ResultSet rs, final int rowNum) throws SQLException {

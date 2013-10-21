@@ -28,8 +28,7 @@ class IndexWithLocalAs extends IndexStrategyWithSingleLookupTable {
                 "SELECT l.object_id, l.object_type, l.pkey " +
                 "  FROM inet_rtr " +
                 "  LEFT JOIN last l ON l.object_id = inet_rtr.object_id " +
-                "  WHERE local_as = ? " +
-                "  AND l.sequence_id != 0 ",
+                "  WHERE local_as = ? ",
                 new RpslObjectResultSetExtractor(),
                 value);
     }

@@ -42,8 +42,7 @@ class IndexWithAsBlock extends IndexStrategyWithSingleLookupTable {
                 "  FROM as_block " +
                 "  LEFT JOIN last l ON l.object_id = as_block.object_id " +
                 "  WHERE ? = as_block.begin_as " +
-                "  AND ? = as_block.end_as " +
-                "  AND l.sequence_id != 0",
+                "  AND ? = as_block.end_as",
                 new RpslObjectResultSetExtractor(),
                 asBlockRange.getBegin(),
                 asBlockRange.getEnd());

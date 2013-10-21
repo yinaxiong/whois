@@ -36,8 +36,7 @@ public class JdbcVersionDao implements VersionDao {
             return jdbcTemplate.queryForObject("" +
                     "SELECT object_id, object " +
                     "FROM last " +
-                    "WHERE object_id = ? " +
-                    "AND sequence_id != 0",
+                    "WHERE object_id = ? ",
                     new RpslObjectRowMapper(), info.getObjectId());
         }
 

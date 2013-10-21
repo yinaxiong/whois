@@ -23,12 +23,11 @@ class IndexWithOrigin extends IndexStrategyAdapter {
         return jdbcTemplate.query("" +
                 "SELECT l.object_id, l.object_type, l.pkey FROM route " +
                 " LEFT JOIN last l ON l.object_id = route.object_id" +
-                " WHERE l.sequence_id != 0  AND route.origin = ?" +
+                " WHERE route.origin = ?" +
                 " UNION" +
                 " SELECT l.object_id, l.object_type, l.pkey FROM route6" +
                 " LEFT JOIN last l ON l.object_id = route6.object_id" +
-                " WHERE route6.origin = ?" +
-                " AND l.sequence_id != 0 ",
+                " WHERE route6.origin = ? ",
                 new RpslObjectResultSetExtractor(), value, value);
     }
 }

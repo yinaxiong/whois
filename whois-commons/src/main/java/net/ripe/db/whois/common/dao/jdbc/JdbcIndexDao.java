@@ -59,7 +59,7 @@ public class JdbcIndexDao implements IndexDao {
     public void rebuild() {
         deleteIndexesForMissingObjects();
 
-        final List<Integer> objectIds = jdbcTemplate.queryForList("SELECT object_id FROM last WHERE sequence_id != 0", Integer.class);
+        final List<Integer> objectIds = jdbcTemplate.queryForList("SELECT object_id FROM last", Integer.class);
         rebuildForObjects(objectIds, Phase.KEYS);
         rebuildForObjects(objectIds, Phase.OTHER);
     }
@@ -111,10 +111,7 @@ public class JdbcIndexDao implements IndexDao {
         for (final Integer objectId : objectIds) {
             try {
                 final Map<String, Object> map = jdbcTemplate.queryForMap(
-                        "SELECT object_id, object, pkey FROM last " +
-                        "WHERE object_id = ? " +
-                        "AND sequence_id != 0 ",
-                        objectId);
+                        "SELECT object_id, object, pkey FROM last WHERE object_id = ? ", objectId);
                 RpslObject rpslObject = RpslObject.parse(((Long)map.get("object_id")).intValue(), (byte[])map.get("object"));
                 final String pkey = (String)map.get("pkey");
 

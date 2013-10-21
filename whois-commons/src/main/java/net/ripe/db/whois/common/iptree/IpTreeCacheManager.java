@@ -267,8 +267,7 @@ public class IpTreeCacheManager {
         final List<IpTreeUpdate> ipTreeUpdates = jdbcTemplate.query("" +
                 "SELECT object_type, pkey, object_id " +
                 "FROM last " +
-                "WHERE object_type in (?, ?, ?, ?, ?) " +
-                "AND sequence_id != 0 ",
+                "WHERE object_type in (?, ?, ?, ?, ?) ",
                 new RowMapper<IpTreeUpdate>() {
                     @Override
                     public IpTreeUpdate mapRow(final ResultSet rs, final int rowNum) throws SQLException {

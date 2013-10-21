@@ -161,12 +161,15 @@ public class JdbcRpslObjectUpdateDao implements RpslObjectUpdateDao {
 
     @Override
     public RpslObjectUpdateInfo undeleteObject(final int objectId) {
+
+        if (objectExistsInLast(jdbcTemplate, objectId)){
+            throw new IllegalStateException("Object with id: " + objectId + " already exists");
+        }
+
         final RpslObject rpslObject = jdbcTemplate.queryForObject("" +
                 "select h.object_id, h.object " +
-                "from last l " +
-                "left join history h on l.object_id = h.object_id " +
-                "where l.object_id = ? " +
-                "and l.sequence_id = 0 " +
+                "from history h " +
+                "where h.object_id = ? " +
                 "and h.timestamp in (select max(h2.timestamp) from history h2 where h2.object_id = ?)",
                 new RpslObjectRowMapper(),
                 objectId, objectId);
@@ -182,7 +185,7 @@ public class JdbcRpslObjectUpdateDao implements RpslObjectUpdateDao {
             LOGGER.warn("Missing references undeleting object {}: {}", objectId, missingReferences);
         }
 
-        final int newSequenceId = updateLastAndUpdateSerials(dateTimeProvider, jdbcTemplate, updateInfo, rpslObject);
+        final int newSequenceId = reInsertIntoLastAndUpdateSerials(dateTimeProvider, jdbcTemplate, updateInfo, rpslObject);
         return new RpslObjectUpdateInfo(objectId, newSequenceId, objectType, pkey);
     }
 

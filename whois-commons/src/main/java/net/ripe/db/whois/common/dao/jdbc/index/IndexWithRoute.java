@@ -43,8 +43,7 @@ class IndexWithRoute extends IndexStrategyWithSingleLookupTable {
                 "SELECT l.object_id, l.object_type, l.pkey " +
                 "  FROM route " +
                 "  LEFT JOIN last l ON l.object_id = route.object_id " +
-                "  WHERE route.prefix = ? AND route.prefix_length = ? AND route.origin = ? " +
-                "  AND l.sequence_id != 0 ",
+                "  WHERE route.prefix = ? AND route.prefix_length = ? AND route.origin = ? ",
                 new RpslObjectResultSetExtractor(),
                 routeKey.ipRange.begin(),
                 routeKey.ipRange.getPrefixLength(),

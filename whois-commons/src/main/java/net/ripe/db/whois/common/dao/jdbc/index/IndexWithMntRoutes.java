@@ -59,8 +59,7 @@ class IndexWithMntRoutes extends IndexWithReference {
                         "  FROM {0} " +
                         "  LEFT JOIN {2} ON {2}.{3} = {0}.object_id " +
                         "  LEFT JOIN last l ON l.object_id = {2}.object_id " +
-                        "  WHERE {0}.{1} = ? " +
-                        "  AND l.sequence_id != 0 ",
+                        "  WHERE {0}.{1} = ? ",
                 IndexStrategies.get(AttributeType.MNTNER).getLookupTableName(),
                 IndexStrategies.get(AttributeType.MNTNER).getLookupColumnName(),
                 lookupTableName,

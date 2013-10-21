@@ -44,8 +44,7 @@ class IndexWithInet6num extends IndexStrategyWithSingleLookupTable {
                 "SELECT l.object_id, l.object_type, l.pkey " +
                 "  FROM inet6num " +
                 "  LEFT JOIN last l ON l.object_id = inet6num.object_id " +
-                "  WHERE i6_msb = ? AND i6_lsb = ? AND prefix_length = ? " +
-                "  AND l.sequence_id != 0 ",
+                "  WHERE i6_msb = ? AND i6_lsb = ? AND prefix_length = ? ",
                 new RpslObjectResultSetExtractor(),
                 Long.toString(Ipv6Resource.msb(resource.begin())),
                 Long.toString(Ipv6Resource.lsb(resource.begin())),

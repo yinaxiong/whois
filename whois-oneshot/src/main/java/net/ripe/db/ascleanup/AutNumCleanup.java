@@ -222,8 +222,7 @@ public class AutNumCleanup {
         JdbcStreamingHelper.executeStreaming(jdbcTemplate,
                 "SELECT object_id, object " +
                         "FROM last " +
-                        "WHERE sequence_id != 0 " +
-                        "AND object_type NOT IN (" +
+                        "WHERE object_type NOT IN (" +
                         // quick win filter to reduce data size by >80%
                         JOINER.join(
                                 ObjectTypeIds.getId(ObjectType.PERSON),
@@ -282,8 +281,7 @@ public class AutNumCleanup {
                 JdbcStreamingHelper.executeStreaming(jdbcTemplate,
                         "SELECT object_id, object" +
                                 " FROM last" +
-                                " WHERE sequence_id != 0" +
-                                " AND object_type = " + ObjectTypeIds.getId(ObjectType.MNTNER) +
+                                " WHERE object_type = " + ObjectTypeIds.getId(ObjectType.MNTNER) +
                                 " AND pkey in ('" + JOINER.join(rpslObject.getValuesForAttribute(AttributeType.MNT_BY)) + "')",
                         new RowCallbackHandler() {
                             @Override

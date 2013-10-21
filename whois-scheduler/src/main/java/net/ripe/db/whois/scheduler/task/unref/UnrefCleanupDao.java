@@ -48,8 +48,7 @@ class UnrefCleanupDao {
         return executeStreaming(jdbcTemplate, "" +
                 "SELECT object_type, pkey, object_id, timestamp\n" +
                 "  FROM last\n" +
-                "  WHERE object_type IN (" + createInClauseForObjectTypes(includeObjectTypes) + ")\n" +
-                "  AND sequence_id != 0 ",
+                "  WHERE object_type IN (" + createInClauseForObjectTypes(includeObjectTypes) + ")",
                 new ResultSetExtractor<Map<ObjectKey, UnrefCleanup.DeleteCandidate>>() {
                     @Override
                     public Map<ObjectKey, UnrefCleanup.DeleteCandidate> extractData(final ResultSet rs) throws SQLException, DataAccessException {
@@ -78,8 +77,7 @@ class UnrefCleanupDao {
     public void doForCurrentRpslObjects(final DeleteCandidatesFilter deleteCandidatesFilter) {
         executeStreaming(jdbcTemplate,
                 "SELECT object_id, object " +
-                        "FROM last " +
-                        "WHERE sequence_id != 0 ",
+                        "FROM last ",
                 new RowCallbackHandler() {
                     @Override
                     public void processRow(ResultSet rs) throws SQLException {

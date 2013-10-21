@@ -52,8 +52,7 @@ class IndexWithMemberOf extends IndexWithReference {
                 "        WHERE (mbrs_by_ref.mnt_id = 0 OR mbrs_by_ref.mnt_id = mnt_by.mnt_id)\n" +
                 "        AND {2}.{3} = mbrs_by_ref.object_id\n" +
                 "        AND {0}.object_id = {2}.{3}\n" +
-                "        AND {0}.{1} = ?\n" +
-                "        AND l.sequence_id != 0 ",
+                "        AND {0}.{1} = ? ",
                 referenceStrategy.getLookupTableName(),
                 referenceStrategy.getLookupColumnName(),
                 lookupTableName,

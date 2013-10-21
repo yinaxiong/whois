@@ -159,8 +159,7 @@ public class FreeTextIndex extends RebuildableIndex {
 
         JdbcStreamingHelper.executeStreaming(jdbcTemplate, "" +
                 "SELECT object_id, object " +
-                "FROM last " +
-                "WHERE sequence_id != 0 ",
+                "FROM last ",
                 new ResultSetExtractor<Void>() {
                     private static final int LOG_EVERY = 500000;
 

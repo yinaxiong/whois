@@ -61,7 +61,6 @@ class IndexWithName extends IndexStrategyWithSingleLookupTable {
 
             query.append(joins);
             query.append(" AND n1.name = ?");
-            query.append(" AND l.sequence_id != 0");
         }
 
         return query.toString();

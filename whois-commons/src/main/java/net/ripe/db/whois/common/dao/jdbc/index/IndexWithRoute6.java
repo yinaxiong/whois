@@ -43,8 +43,7 @@ class IndexWithRoute6 extends IndexStrategyWithSingleLookupTable {
                 "SELECT l.object_id, l.object_type, l.pkey " +
                 "  FROM route6 " +
                 "  LEFT JOIN last l ON l.object_id = route6.object_id " +
-                "  WHERE route6.r6_msb = ? AND route6.r6_lsb = ? AND route6.prefix_length = ? AND route6.origin = ? " +
-                "  AND l.sequence_id != 0 ",
+                "  WHERE route6.r6_msb = ? AND route6.r6_lsb = ? AND route6.prefix_length = ? AND route6.origin = ? ",
                 new RpslObjectResultSetExtractor(),
                 Long.toString(Ipv6Resource.msb(route6Key.resource.begin())),
                 Long.toString(Ipv6Resource.lsb(route6Key.resource.begin())),
