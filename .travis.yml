@@ -6,6 +6,6 @@ before_install:
  - sudo apt-get install byacc git maven openjdk-7-doc openjdk-7-jdk openjdk-7-source mysql-server mysql-client
 
 before_script:
- - mysql -e 'CREATE USER 'dbint'@'localhost' IDENTIFIED BY 'dbint';
+ - mysql -u root -e "CREATE USER 'dbint'@'localhost' IDENTIFIED BY 'dbint'";
 
 script: mvn install -Ptravis
