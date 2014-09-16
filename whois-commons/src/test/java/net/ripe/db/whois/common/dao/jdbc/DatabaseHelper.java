@@ -101,26 +101,26 @@ public class DatabaseHelper implements EmbeddedValueResolverAware {
 
     @Autowired(required = false)
     @Qualifier("mailupdatesDataSource")
-    public void setMailupdatesDataSource(DataSource mailupdatesDataSource) {
+    public void setMailupdatesDataSource(final DataSource mailupdatesDataSource) {
         this.mailupdatesDataSource = mailupdatesDataSource;
         mailupdatesTemplate = new JdbcTemplate(mailupdatesDataSource);
     }
 
     @Autowired(required = false)
     @Qualifier("dnscheckDataSource")
-    public void setDnsCheckDataSource(DataSource dnsCheckDataSource) {
+    public void setDnsCheckDataSource(final DataSource dnsCheckDataSource) {
         this.dnsCheckDataSource = dnsCheckDataSource;
     }
 
     @Autowired(required = false)
     @Qualifier("internalsDataSource")
-    public void setInternalsDataSource(DataSource internalsDataSource) {
+    public void setInternalsDataSource(final DataSource internalsDataSource) {
         internalsTemplate = new JdbcTemplate(internalsDataSource);
     }
 
     // TODO: [AH] autowire these fields once whois-internals has proper wiring set up
     @Autowired
-    public void setCrowdClient(CrowdClient crowdClient) {
+    public void setCrowdClient(final CrowdClient crowdClient) {
         this.crowdClient = crowdClient;
     }
 
@@ -132,12 +132,12 @@ public class DatabaseHelper implements EmbeddedValueResolverAware {
 
 
     @Autowired
-    public void setRpslObjectDao(RpslObjectDao rpslObjectDao) {
+    public void setRpslObjectDao(final RpslObjectDao rpslObjectDao) {
         this.rpslObjectDao = rpslObjectDao;
     }
 
     @Autowired
-    public void setRpslObjectUpdateDao(RpslObjectUpdateDao rpslObjectUpdateDao) {
+    public void setRpslObjectUpdateDao(final RpslObjectUpdateDao rpslObjectUpdateDao) {
         this.rpslObjectUpdateDao = rpslObjectUpdateDao;
     }
 
@@ -145,8 +145,6 @@ public class DatabaseHelper implements EmbeddedValueResolverAware {
     public void setEmbeddedValueResolver(final StringValueResolver valueResolver) {
         this.valueResolver = valueResolver;
     }
-
-
 
     private static String dbBaseName;
     private static Map<String, String> grsDatabaseNames = Maps.newHashMap();
@@ -225,7 +223,7 @@ public class DatabaseHelper implements EmbeddedValueResolverAware {
 
         System.setProperty(propertyBase + ".url", "jdbc:mysql://localhost/" + dbName);
         System.setProperty(propertyBase + ".username", "dbint");
-        System.setProperty(propertyBase + ".password", "");
+        System.setProperty(propertyBase + ".password", "dbint");
     }
 
     private static JdbcTemplate createDefaultTemplate() {
@@ -241,6 +239,7 @@ public class DatabaseHelper implements EmbeddedValueResolverAware {
             dataSource.setDriverClass(driverClass);
             dataSource.setUrl("jdbc:mysql://localhost/" + databaseName);
             dataSource.setUsername("dbint");
+            dataSource.setPassword("dbint");
 
             return dataSource;
         } catch (ClassNotFoundException e) {
@@ -283,7 +282,7 @@ public class DatabaseHelper implements EmbeddedValueResolverAware {
         setupAclDatabase();
     }
 
-    public void setupWhoisDatabase(JdbcTemplate jdbcTemplate) {
+    public void setupWhoisDatabase(final JdbcTemplate jdbcTemplate) {
         truncateTables(jdbcTemplate);
         loadScripts(jdbcTemplate, "whois_data.sql");
     }
@@ -400,7 +399,7 @@ public class DatabaseHelper implements EmbeddedValueResolverAware {
     }
 
     // TODO: move claimIds from ObjectLoader to whois-commons
-    private void claimId(RpslObject rpslObject) {
+    private void claimId(final RpslObject rpslObject) {
         // claim IDs. ugly, but ObjectLoader is in whois-update
         try {
             Object bean = applicationContext.getBean("objectLoader");
