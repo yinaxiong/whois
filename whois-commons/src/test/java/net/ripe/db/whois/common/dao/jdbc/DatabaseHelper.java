@@ -223,7 +223,6 @@ public class DatabaseHelper implements EmbeddedValueResolverAware {
 
         System.setProperty(propertyBase + ".url", "jdbc:mysql://localhost/" + dbName);
         System.setProperty(propertyBase + ".username", "dbint");
-        System.setProperty(propertyBase + ".password", "dbint");
     }
 
     private static JdbcTemplate createDefaultTemplate() {
@@ -239,7 +238,6 @@ public class DatabaseHelper implements EmbeddedValueResolverAware {
             dataSource.setDriverClass(driverClass);
             dataSource.setUrl("jdbc:mysql://localhost/" + databaseName);
             dataSource.setUsername("dbint");
-            dataSource.setPassword("dbint");
 
             return dataSource;
         } catch (ClassNotFoundException e) {
