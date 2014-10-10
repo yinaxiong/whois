@@ -77,7 +77,6 @@ public class DatabaseHelper implements EmbeddedValueResolverAware {
 
     private JdbcTemplate aclTemplate;
     private JdbcTemplate mailupdatesTemplate;
-    private JdbcTemplate internalsTemplate;
     private SourceAwareDataSource sourceAwareDataSource;
 
     @Autowired ApplicationContext applicationContext;
@@ -110,12 +109,6 @@ public class DatabaseHelper implements EmbeddedValueResolverAware {
     @Qualifier("dnscheckDataSource")
     public void setDnsCheckDataSource(DataSource dnsCheckDataSource) {
         this.dnsCheckDataSource = dnsCheckDataSource;
-    }
-
-    @Autowired(required = false)
-    @Qualifier("internalsDataSource")
-    public void setInternalsDataSource(DataSource internalsDataSource) {
-        internalsTemplate = new JdbcTemplate(internalsDataSource);
     }
 
     // TODO: [AH] autowire these fields once whois-internals has proper wiring set up
@@ -170,7 +163,6 @@ public class DatabaseHelper implements EmbeddedValueResolverAware {
         setupDatabase(jdbcTemplate, "dnscheck.database", "DNSCHECK", "dnscheck_schema.sql");
         setupDatabase(jdbcTemplate, "mailupdates.database", "MAILUPDATES", "mailupdates_schema.sql");
         setupDatabase(jdbcTemplate, "whois.db", "WHOIS", "whois_schema.sql", "whois_data.sql");
-        setupDatabase(jdbcTemplate, "internals.database", "INTERNALS", "internals_schema.sql", "internals_data.sql");
 
         final String masterUrl = String.format("jdbc:log:mysql://localhost/%s_WHOIS;driver=%s", dbBaseName, JDBC_DRIVER);
         System.setProperty("whois.db.master.url", masterUrl);
@@ -278,7 +270,6 @@ public class DatabaseHelper implements EmbeddedValueResolverAware {
             }
         }
 
-        setupInternalsDatabase();
         setupMailupdatesDatabase();
         setupAclDatabase();
     }
@@ -296,11 +287,6 @@ public class DatabaseHelper implements EmbeddedValueResolverAware {
         truncateTables(mailupdatesTemplate);
     }
 
-    public void setupInternalsDatabase() {
-        truncateTables(internalsTemplate);
-        loadScripts(internalsTemplate, "internals_data.sql");
-    }
-
     public DataSource getMailupdatesDataSource() {
         return mailupdatesDataSource;
     }
@@ -311,10 +297,6 @@ public class DatabaseHelper implements EmbeddedValueResolverAware {
 
     public DataSource getDnsCheckDataSource() {
         return dnsCheckDataSource;
-    }
-
-    public JdbcTemplate getInternalsTemplate() {
-        return internalsTemplate;
     }
 
     public JdbcTemplate getWhoisTemplate() {
