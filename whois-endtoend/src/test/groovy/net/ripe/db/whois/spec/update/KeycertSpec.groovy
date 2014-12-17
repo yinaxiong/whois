@@ -2733,4 +2733,37 @@ class KeycertSpec extends BaseQueryUpdateSpec {
         ack.successes.any { it.operation == "Delete" && it.key == "[key-cert] PGPKEY-F6A10C2D" }
     }
 
+    def "PGP key should not fail validation when not formatted correctly"() {
+        given:
+            def keycert = "key-cert: PGPKEY-990E5695\n" +
+            "method: PGP\n" +
+            "owner: COLTB2B\n" +
+            "fingerpr: 22 A0 3A 12 D1 85 0C 0E C5 4C CB 11 D1 2C 0D 77\n" +
+            "certif: -----BEGIN PGP PUBLIC KEY BLOCK-----\n" +
+            "certif: Version: PGP 6.5.8\n" +
+            "certif:\n" +
+            "certif: mQENA0gFyuUAAAEIAMZ//d00vCDRBqEp1/WLT/QuMWf3FH9Pd3ut2d21jkpTMArw\n" +
+            "certif: JWSzwsvDp3nTWwlybHe4IjiiVxUIn4dGvGzCv3/Y/+vdgVLHhOq6j1lFB73c4tSv\n" +
+            "certif: 9uYS/6p8IfexH4jXil1asaieos+VWE7vhgW2aTLgI6CO2YOM1i72ugjHN645Infj\n" +
+            "certif: A7vIfx3cJ1kPFmgC6cEY4TzaFt+KZqlpRLxV6ccAzvWjSnh/M7u3lBmD3jJbsHlW\n" +
+            "certif: kr2Xe4VWV8K25UjYljhfQ5uLmh3jO2cjTw9xjTls7gkb9nft04bsxjvd7kbHOGhX\n" +
+            "certif: fBb/EvoohW/qKE6cKbmfvJHURsVXd81IepkOVpUABRG0B0NPTFRCMkKJARUDBRBI\n" +
+            "certif: Bcrld81IepkOVpUBARyaCACG1qwmI1//7rs90PbM0tGwUGX/JT0gW7oqf4YAVZfQ\n" +
+            "certif: DqZ4URCWSbDsMNdLHozwIeGZCQatEWX1r+Xx+ylv/KCCecEZkfM7R8decW3pG5KF\n" +
+            "certif: fvBi0fvRAdf89YG1+Xu2hq5G+5GzwdIh3B9lyeF6Igjr9TtPOQ0xY5cqNO7zaTWQ\n" +
+            "certif: ocSE+pPraQes0ycJMqFGAPTUMr+fXWQSn1c8N13ZfDP8m7Ds5y70+I4nFROJBNxe\n" +
+            "certif: Sa6w2igFbNkrqBpeK+AdNUCmn/6suSID1bwM5J0wSULseBhKhzkIC/Up+qcUH3JY\n" +
+            "certif: STZVe9KNSEbUkQoxGJpuYw3eJW+1flbSMw+UHOgQ/2xc=yLfL\n" +
+            "certif: -----END PGP PUBLIC KEY BLOCK-----\n" +
+            "mnt-by: LIR-MNT\n" +
+            "changed: test@ripe.net\n" +
+            "source: TEST\n" +
+            "password: lir"
+
+        when:
+            def response = syncUpdate(keycert)
+
+        then:
+            response =~ /Create SUCCEEDED: \[key-cert\] PGPKEY-990E5695/
+    }
 }

@@ -10,13 +10,7 @@ import net.ripe.db.whois.common.rpsl.RpslObjectFilter;
 import org.bouncycastle.bcpg.ArmoredInputStream;
 import org.bouncycastle.bcpg.SignatureSubpacketTags;
 import org.bouncycastle.jce.provider.BouncyCastleProvider;
-import org.bouncycastle.openpgp.PGPException;
-import org.bouncycastle.openpgp.PGPKeyFlags;
-import org.bouncycastle.openpgp.PGPPublicKey;
-import org.bouncycastle.openpgp.PGPPublicKeyRing;
-import org.bouncycastle.openpgp.PGPSignature;
-import org.bouncycastle.openpgp.PGPSignatureSubpacketVector;
-import org.bouncycastle.openpgp.PGPUtil;
+import org.bouncycastle.openpgp.*;
 import org.bouncycastle.openpgp.bc.BcPGPPublicKeyRingCollection;
 import org.bouncycastle.openpgp.operator.jcajce.JcaPGPContentVerifierBuilderProvider;
 import org.joda.time.LocalDateTime;
@@ -27,11 +21,13 @@ import java.security.Provider;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.regex.Pattern;
 
 public class PgpPublicKeyWrapper implements KeyWrapper {
     private static final String PGP_HEADER = "-----BEGIN PGP PUBLIC KEY BLOCK-----";
     private static final String PGP_FOOTER = "-----END PGP PUBLIC KEY BLOCK-----";
     private static final String METHOD = "PGP";
+    private static final Pattern FORMATTER_PATTERN = Pattern.compile("\n=.{4}\n");
 
     private static final Provider PROVIDER = new BouncyCastleProvider();
 
@@ -50,7 +46,7 @@ public class PgpPublicKeyWrapper implements KeyWrapper {
         }
 
         try {
-            final byte[] bytes = RpslObjectFilter.getCertificateFromKeyCert(object).getBytes(Charsets.ISO_8859_1);
+            final byte[] bytes = attemptFormat(RpslObjectFilter.getCertificateFromKeyCert(object)).getBytes(Charsets.ISO_8859_1);
             final ArmoredInputStream armoredInputStream = (ArmoredInputStream) PGPUtil.getDecoderStream(new ByteArrayInputStream(bytes));
             PGPPublicKey masterKey = null;
             List<PGPPublicKey> subKeys = Lists.newArrayList();
@@ -115,6 +111,17 @@ public class PgpPublicKeyWrapper implements KeyWrapper {
         } catch (PGPException e) {
             throw new IllegalArgumentException("The supplied object has no key");
         }
+    }
+
+    private static String attemptFormat(final String certificateFromKeyCert) {
+        final StringBuilder buffer = new StringBuilder(certificateFromKeyCert);
+        final int keyEnd = buffer.lastIndexOf(PGP_FOOTER);
+        final String substring = buffer.substring(keyEnd - 7, keyEnd);
+
+        if (!FORMATTER_PATTERN.matcher(substring).matches()) {
+            return buffer.insert(keyEnd - 6, '\n').toString();
+        }
+        return certificateFromKeyCert;
     }
 
     static boolean hasFlag(final PGPSignature signature, final int flag) {
